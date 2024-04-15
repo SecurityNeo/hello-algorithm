@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // InsertSort 插入排序（每次将一个待排序的元素与已排序的元素进行逐一比较，直到找到合适的位置按大小插入）,
 // 时间复杂度：O(n^2),适用于小规模数据和部分有序数据的排序需求。对于小规模数据和部分有序的数据，插入排序表现良好。
@@ -141,4 +143,59 @@ func smallSumMerge(arr []int, L, M, R int) (sum int) {
 		arr[L+i] = helpArr[i]
 	}
 	return sum
+}
+
+// inversePair 利用归并排序思路求逆序对问题。对于数组（所有数字不相同）中一个数A，如果在其右边的数比它小，那这两个数称为一个逆序对。
+// 一个升序数组没有逆序对
+func inversePair(arr []int) {
+	if len(arr) <= 1 {
+		fmt.Println("inverse pair count: 0")
+		return
+	}
+	count := inversePairProcess(arr, 0, len(arr)-1)
+	fmt.Printf("inverse pair count: %d\n", count)
+}
+
+func inversePairProcess(arr []int, L, R int) (count int) {
+	if L == R {
+		return 0
+	}
+	M := L + ((R - L) >> 1)
+	count = inversePairProcess(arr, L, M) + inversePairProcess(arr, M+1, R) + inversePairMerge(arr, L, M, R)
+	return count
+}
+
+func inversePairMerge(arr []int, L, M, R int) (count int) {
+	arrLength := R - L + 1
+	helpArr := make([]int, arrLength)
+
+	p1 := L
+	p2 := M + 1
+
+	i := 0
+
+	for p1 <= M && p2 <= R {
+		if arr[p1] < arr[p2] {
+			helpArr[i] = arr[p1]
+			i++
+			p1++
+		} else {
+			helpArr[i] = arr[p2]
+			count += M - p1 + 1
+			i++
+			p2++
+		}
+	}
+
+	for p1 <= M {
+		helpArr[i] = arr[p1]
+		p1++
+		i++
+	}
+	for p2 <= R {
+		helpArr[i] = arr[p2]
+		p2++
+		i++
+	}
+	return count
 }

@@ -30,4 +30,6 @@ func main() {
 	arr8 := []int{5, 3, 1, 8, 6, 9}
 	smallSum(arr8)
 
+	arr9 := []int{5, 3, 1, 8, 6, 9}
+	inversePair(arr9)
 }
