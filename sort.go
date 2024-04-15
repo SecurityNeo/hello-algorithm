@@ -199,3 +199,30 @@ func inversePairMerge(arr []int, L, M, R int) (count int) {
 	}
 	return count
 }
+
+// quickSort1 快排。小于等于num的放左边，大于num的放右边。（快慢指针）
+func quickSort1(arr []int, num int) {
+	if len(arr) <= 1 {
+		fmt.Printf("No need to sort,array length: %d\n", len(arr))
+		return
+	}
+
+	i := -1
+	j := 0
+
+	for j < len(arr) {
+		if arr[j] <= num {
+
+			tmp := arr[j]
+			arr[j] = arr[i+1]
+			arr[i+1] = tmp
+
+			i++
+			j++
+
+		} else {
+			j++
+		}
+	}
+	fmt.Println(arr)
+}

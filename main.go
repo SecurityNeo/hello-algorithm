@@ -32,4 +32,7 @@ func main() {
 
 	arr9 := []int{5, 3, 1, 8, 6, 9}
 	inversePair(arr9)
+
+	arr10 := []int{5, 3, 1, 8, 6, 9}
+	quickSort1(arr10, 7)
 }
