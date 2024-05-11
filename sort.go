@@ -200,8 +200,9 @@ func inversePairMerge(arr []int, L, M, R int) (count int) {
 	return count
 }
 
-// quickSort1 快排。小于等于num的放左边，大于num的放右边。（快慢指针）
+// quickSort1 快排前序。小于等于num的放左边，大于num的放右边。（快慢指针）
 func quickSort1(arr []int, num int) {
+	fmt.Println("Before sorted: ", arr)
 	if len(arr) <= 1 {
 		fmt.Printf("No need to sort,array length: %d\n", len(arr))
 		return
@@ -212,11 +213,7 @@ func quickSort1(arr []int, num int) {
 
 	for j < len(arr) {
 		if arr[j] <= num {
-
-			tmp := arr[j]
-			arr[j] = arr[i+1]
-			arr[i+1] = tmp
-
+			arr[j], arr[i+1] = arr[i+1], arr[j]
 			i++
 			j++
 
@@ -224,5 +221,38 @@ func quickSort1(arr []int, num int) {
 			j++
 		}
 	}
-	fmt.Println(arr)
+	fmt.Println("Quick sort result: ", arr)
+}
+
+// quickSort2 荷兰国旗问题（只做分区，不用保证整个数组有序）。
+func quickSort2(arr []int, num int) {
+	fmt.Println("Before sorted: ", arr)
+	arrLength := len(arr)
+	if arrLength <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", arrLength)
+		return
+	}
+
+	p1 := -1
+	p2 := arrLength
+	cur := 0
+
+	for cur < p2 {
+		if arr[cur] < num {
+			arr[cur], arr[p1+1] = arr[p1+1], arr[cur]
+			cur++
+			p1++
+		} else if arr[cur] == num {
+			cur++
+		} else {
+			// 当当前值比基准值大的时候，标识当前值的指针不能自增，否则当arr[p2-1]的值也比基准值大的时候就乱了。
+			arr[cur], arr[p2-1] = arr[p2-1], arr[cur]
+			p2--
+		}
+	}
+	fmt.Println("Quick sort result: ", arr)
+}
+
+func quickSort(arr []int) {
+
 }

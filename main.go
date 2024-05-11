@@ -35,4 +35,7 @@ func main() {
 
 	arr10 := []int{5, 3, 1, 8, 6, 9}
 	quickSort1(arr10, 7)
+
+	arr11 := []int{2, 3, 1, 5, 4, 6, 3, 2, 7, 3, 2, 4, 1}
+	quickSort2(arr11, 3)
 }
