@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 )
 
 // InsertSort 插入排序（每次将一个待排序的元素与已排序的元素进行逐一比较，直到找到合适的位置按大小插入）,
@@ -221,7 +223,7 @@ func quickSort1(arr []int, num int) {
 			j++
 		}
 	}
-	fmt.Println("Quick sort result: ", arr)
+	fmt.Println("quickSort1 result: ", arr)
 }
 
 // quickSort2 荷兰国旗问题（只做分区，不用保证整个数组有序）。
@@ -250,9 +252,86 @@ func quickSort2(arr []int, num int) {
 			p2--
 		}
 	}
-	fmt.Println("Quick sort result: ", arr)
+	fmt.Println("quickSort2 result: ", arr)
 }
 
-func quickSort(arr []int) {
+// quickSort3 快排（版本1）。思路：参照荷兰国旗问题思路，选取数组中的一个数作为基准元素，比基准元素小的放一个临时数组，
+// 与基准元素相等的放一个临时数组， 比基准元素大的放另一个临时数组，然后将这三个临时数组合并，递归调用，即可以得到一个排序后的数组。
+// 此种方法空间复杂度高。
+// 注意：必须要设计一个与基准元素相等的临时数组，否则在遇到原始数组有多个相等的元素，并且这个元素在最后一次分区时被选为基准元素后，迭代将永远不会结束
+func quickSort3(arr []int) {
+	fmt.Println("Before sorted: ", arr)
+	if len(arr) <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", len(arr))
+		return
+	}
+	result := quickSort3Process(arr)
+	fmt.Println("quickSort3 result:", result)
+}
 
+func quickSort3Process(arr []int) (Arr []int) {
+	length := len(arr)
+	if length <= 1 {
+		return arr
+	}
+	// 随机取数组中的一个作为基准数，防止特殊情况下（例如待排序的数组就是一个有序数组）复杂度退化为O(n^2)
+	rand.Seed(time.Now().UnixNano())
+	p := rand.Intn(length)
+	pivot := arr[p]
+	var lowArr, equal, highArr []int
+	for _, v := range arr {
+		if v < pivot {
+			lowArr = append(lowArr, v)
+		} else if v == pivot {
+			equal = append(equal, v)
+		} else {
+			highArr = append(highArr, v)
+		}
+	}
+
+	return append(quickSort3Process(lowArr), append(equal, quickSort3Process(highArr)...)...)
+}
+
+// quickSort4 快排（版本2）。参照荷兰国旗问题解题思路，先依据基准值给数组分为三个部分，再分别把小于基准值和大于基准值的部分继续迭代排序。
+// 相比版本1，空间复杂度低一些。
+func quickSort4(arr []int) {
+	fmt.Println("Before sorted: ", arr)
+	if len(arr) <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", len(arr))
+		return
+	}
+	quickSort4Process(arr, 0, len(arr)-1)
+	fmt.Println("quickSort4 result: ", arr)
+}
+
+func quickSort4Process(arr []int, left, right int) {
+	if left < right {
+		rand.Seed(time.Now().UnixNano())
+		// 基准数的位置必须在left与right之间
+		p := rand.Intn(right-left) + left
+		pivot := arr[p]
+		p1 := left - 1
+		p2 := right + 1
+		cur := left
+		for cur < p2 {
+			if arr[cur] < pivot {
+				arr[cur], arr[p1+1] = arr[p1+1], arr[cur]
+				p1++
+				cur++
+			} else if arr[cur] == pivot {
+				cur++
+			} else {
+				arr[cur], arr[p2-1] = arr[p2-1], arr[cur]
+				p2--
+			}
+		}
+		// 边界条件：如果p1为-1，那小于基准值的部分为空，就无需再迭代
+		if p1 != -1 {
+			quickSort4Process(arr, 0, p1)
+		}
+		// 边界条件：如果p2为right+1，那么大于基准值的部分为空，同样无需再迭代
+		if p2 != right+1 {
+			quickSort4Process(arr, p2, right)
+		}
+	}
 }
