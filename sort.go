@@ -373,3 +373,27 @@ func bubbleSort(arr []int) {
 	}
 	fmt.Println("bubbleSort result: ", arr)
 }
+
+// selectSort 选择排序。时间复杂度O(n^2)，由于选择元素后会发生交换，有可能把前面的元素交换到后面，
+// 所以选择排序是不稳定排序（如果a原本在b的前面，且a == b，排序之后a仍然在b的前面，则为稳定排序）。
+func selectSort(arr []int) {
+	length := len(arr)
+	if length <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", len(arr))
+		return
+	}
+	// 从无序区间不断挑选最小值与有序区间的最后一个元素交换
+	for i := 0; i < length-1; i++ {
+		// 假定无序区间第一个元素是此区间的最小值
+		minIndex := i
+		// 遍历无序区间，如果有比无序区间第一个元素更小的元素，将其索引赋值给minIndex
+		for j := i + 1; j < length; j++ {
+			if arr[j] < arr[minIndex] {
+				minIndex = j
+			}
+		}
+		// 找出无序区间最小元素后，与第一个元素交换
+		arr[i], arr[minIndex] = arr[minIndex], arr[i]
+	}
+	fmt.Println("selectSort result: ", arr)
+}

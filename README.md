@@ -23,3 +23,4 @@
     - [快排解法1](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L262)
     - [快排解法2](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L297)
   - [冒泡排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L339)
+  - [选择排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L377)
