@@ -266,7 +266,7 @@ func quickSort3(arr []int) {
 		return
 	}
 	result := quickSort3Process(arr)
-	fmt.Println("quickSort3 result:", result)
+	fmt.Println("quickSort3 result: ", result)
 }
 
 func quickSort3Process(arr []int) (Arr []int) {
@@ -295,7 +295,6 @@ func quickSort3Process(arr []int) (Arr []int) {
 // quickSort4 快排（版本2）。参照荷兰国旗问题解题思路，先依据基准值给数组分为三个部分，再分别把小于基准值和大于基准值的部分继续迭代排序。
 // 相比版本1，空间复杂度低一些。
 func quickSort4(arr []int) {
-	fmt.Println("Before sorted: ", arr)
 	if len(arr) <= 1 {
 		fmt.Printf("No need to sort,array lenth: %d\n", len(arr))
 		return
@@ -334,4 +333,43 @@ func quickSort4Process(arr []int, left, right int) {
 			quickSort4Process(arr, p2, right)
 		}
 	}
+}
+
+// bubbleSort 冒泡排序。
+func bubbleSort(arr []int) {
+	length := len(arr)
+	if length <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", len(arr))
+		return
+	}
+
+	// 通过找到数组中处于无序部分的右边界来减少比较的范围，在一些场景下可以极大提高算法效率
+	// 表示数组中处于无序部分的右边界
+	sortBorder := length - 1
+	// 表示每一轮次产生数据交换时的索引
+	lastExchangeIndex := 0
+
+	// 外层循环控制轮次
+	for i := 0; i < length-1; i++ {
+		// 数组是否有序的标识，如果在中间轮次已有序，那就直接结束。
+		// 此标识初始值设为true，如果在某一轮次中，发生过数据位置交换，就表示此数组还不是有序状态，
+		// 反之，这一轮次都没有出现数据交换机，那就表示数据已有序。
+		isSorted := true
+		// 内层循环控制比较的元素边界
+		// 基础排序算法实现的版本里，j < length-i-1
+		for j := 0; j < sortBorder; j++ {
+			if arr[j] > arr[j+1] {
+				arr[j], arr[j+1] = arr[j+1], arr[j]
+				isSorted = false
+				lastExchangeIndex = j
+			}
+		}
+		// 将最后发生数据交换的索引赋值给sortBorder，这样在下一轮次循环里，待比较的数组元素由边界就是上一轮次最后交换数据的地方
+		sortBorder = lastExchangeIndex
+		// 如果已有序，则退出循环
+		if isSorted {
+			break
+		}
+	}
+	fmt.Println("bubbleSort result: ", arr)
 }
