@@ -397,3 +397,63 @@ func selectSort(arr []int) {
 	}
 	fmt.Println("selectSort result: ", arr)
 }
+
+// heapInsert 实现对于一个大根堆arr，插入一个元素至堆尾，最终仍然为一个大根堆。
+func heapInsert(arr []int, heapSize int) {
+	// i 取最后一个节点索引
+	i := heapSize
+	// 对于一个完全二叉树，其中一个元素位置为 i，则其左儿子位置为 2*i+1，右儿子位置为 2*i+2，其父亲的位置为 (i-1)/2
+	for arr[i] > arr[(i-1)/2] {
+		arr[i], arr[(i-1)/2] = arr[(i-1)/2], arr[i]
+		i = (i - 1) / 2
+	}
+
+}
+
+// prepareHeap 构造一个大根堆
+func prepareHeap(arr []int) {
+	length := len(arr)
+	for i := 0; i < length; i++ {
+		heapInsert(arr, i)
+	}
+}
+
+// heapify 在一个大根堆中，去掉最大值（即arr[0]）,并要求剩余的元素仍然为一个大根堆
+func heapify(arr []int, heapSize int) {
+	// 先将第一个元素（大根堆中的最大值）与数组最后一个值交换
+	arr[0], arr[heapSize] = arr[heapSize], arr[0]
+	// 交换之后把最后一个元素（即之前数组中的最大值）排除在外
+	lastIndex := heapSize - 1
+	i := 0
+	for 2*i+1 <= lastIndex { // 至少有一个孩子
+		var largestIndex int
+		if 2*i+2 <= lastIndex { // 存在右孩子
+			if arr[i] >= arr[2*i+1] && arr[i] >= arr[2*i+2] {
+				break
+			} else if arr[2*i+1] > arr[i] && arr[2*i+1] > arr[2*i+2] {
+				largestIndex = 2*i + 1
+				arr[i], arr[2*i+1] = arr[2*i+1], arr[i]
+				i = largestIndex
+			} else {
+				largestIndex = 2*i + 2
+				arr[i], arr[2*i+2] = arr[2*i+2], arr[i]
+				i = largestIndex
+			}
+		} else { // 只有左孩子
+			if arr[i] >= arr[2*i+1] {
+				break
+			}
+			arr[i], arr[2*i+1] = arr[2*i+1], arr[i]
+			i = 2*i + 1
+		}
+	}
+}
+
+func heapSort(arr []int) {
+	prepareHeap(arr)
+	length := len(arr)
+	for i := length - 1; i >= 0; i-- {
+		heapify(arr, i)
+	}
+	fmt.Println("heapSort result:   ", arr)
+}
