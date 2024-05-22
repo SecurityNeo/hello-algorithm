@@ -24,4 +24,7 @@
     - [快排解法2](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L297)
   - [冒泡排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L339)
   - [选择排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L377)
-  - [堆排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L452)
+  - [堆排序]
+    - [堆排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L452)
+    - [堆排序扩展：几乎已排序数组的排序问题](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L462)
+    - [堆排序扩展：topK算法☆](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L516)

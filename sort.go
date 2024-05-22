@@ -457,3 +457,99 @@ func heapSort(arr []int) {
 	}
 	fmt.Println("heapSort result:   ", arr)
 }
+
+// sortK 堆排序扩展。对于一个几乎已排好序的数组，数组中每个元素的位置跟最终排序完的位置偏移量最大不超过k
+func sortK(arr []int, k int) {
+	helpArr := prepareSmallHeap(arr, k+1)
+	for i := 1; i < len(arr)-k; i++ {
+		heapifySmall(helpArr, arr[i+k])
+		arr[i] = helpArr[0]
+	}
+	// 将小根堆的元素做一次堆排序
+	heapSort(helpArr)
+	arr = append(arr[:len(arr)-k-1], helpArr...)
+	fmt.Println("sortK result:      ", arr)
+}
+
+// prepareSmallHeap 构造一个小根堆
+func prepareSmallHeap(arr []int, heapSize int) (heapArr []int) {
+	for i := 0; i < heapSize; i++ {
+		// 对于一个完全二叉树，其中一个元素位置为 i，则其左儿子位置为 2*i+1，右儿子位置为 2*i+2，其父亲的位置为 (i-1)/2
+		for arr[i] < arr[(i-1)/2] {
+			arr[i], arr[(i-1)/2] = arr[(i-1)/2], arr[i]
+			i = (i - 1) / 2
+		}
+	}
+	heapArr = append(heapArr, arr[:heapSize]...)
+	return
+}
+
+// heapifySmall 替换小根堆中第一个节点后，保证其仍然为一个小根堆
+func heapifySmall(helpArr []int, newNode int) {
+	helpArr[0] = newNode
+	length := len(helpArr)
+	i := 0
+	for 2*i+1 <= length-1 { // 至少有一个孩子
+		if 2*i+2 <= length-1 { // 存在右孩子
+			if helpArr[i] < helpArr[2*i+1] && helpArr[i] < helpArr[2*i+2] {
+				break
+			} else if helpArr[2*i+1] < helpArr[i] && helpArr[2*i+1] < helpArr[2*i+2] {
+				helpArr[2*i+1], helpArr[i] = helpArr[i], helpArr[2*i+1]
+				i = 2*i + 1
+			} else {
+				helpArr[2*i+2], helpArr[i] = helpArr[i], helpArr[2*i+2]
+				i = 2*i + 2
+			}
+		} else { // 只有左孩子
+			if helpArr[2*i+1] < helpArr[i] {
+				helpArr[2*i+1], helpArr[i] = helpArr[i], helpArr[2*i+1]
+				i = 2*i + 1
+			} else {
+				break
+			}
+		}
+	}
+}
+
+// topK 堆排序扩展，获取数组中前k个最大或最小的元素。求前k个最大元素，构造长度为k的小根堆，反之构造大根堆。
+// 然后用剩余的（n-k）个元素依次与堆顶元素比较，符合条件（求最大k个元素的话就看其是否比堆顶元素大），就交换并堆化。
+func topK(arr []int, k int) {
+	var topHeap []int
+	// step1：先构造一个小根堆
+	for i := 0; i < k; i++ {
+		for arr[i] < arr[(i-1)/2] {
+			arr[i], arr[(i-1)/2] = arr[(i-1)/2], arr[i]
+			i = (i - 1) / 2
+		}
+	}
+	topHeap = append(topHeap, arr[:k]...)
+
+	// step2: 不断取原数组中剩余的元素与topHeap中的堆顶元素比较，如果比堆顶元素大，就用其替换掉堆顶元素，再参照heapify流程使topHeap为一个小根堆
+	for i := k - 1; i < len(arr); i++ {
+		if arr[i] > topHeap[0] {
+			topHeap[0] = arr[i]
+			smallestIndex := 0
+			for 2*smallestIndex+1 <= k-1 { // 至少有一个孩子
+				if 2*smallestIndex+2 <= k-1 { // 还有右孩子
+					if topHeap[smallestIndex] < topHeap[2*smallestIndex+1] && topHeap[smallestIndex] < topHeap[2*smallestIndex+2] {
+						break
+					} else if topHeap[2*smallestIndex+1] < topHeap[smallestIndex] && topHeap[2*smallestIndex+1] < topHeap[2*smallestIndex+2] {
+						topHeap[smallestIndex], topHeap[2*smallestIndex+1] = topHeap[2*smallestIndex+1], topHeap[smallestIndex]
+						smallestIndex = 2*smallestIndex + 1
+					} else {
+						topHeap[smallestIndex], topHeap[2*smallestIndex+2] = topHeap[2*smallestIndex+2], topHeap[smallestIndex]
+						smallestIndex = 2*smallestIndex + 2
+					}
+				} else { // 只有左孩子
+					if topHeap[smallestIndex] < topHeap[2*smallestIndex+1] {
+						break
+					} else {
+						topHeap[smallestIndex], topHeap[2*smallestIndex+1] = topHeap[2*smallestIndex+1], topHeap[smallestIndex]
+						smallestIndex = 2*smallestIndex + 1
+					}
+				}
+			}
+		}
+	}
+	fmt.Println("topK result:    ", topHeap)
+}
