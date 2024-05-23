@@ -13,18 +13,16 @@
     - 求极小值
     - 查找一个非空有序数组arr中大于等于target并且最靠左的位置
 
-- 排序
-  - [插入排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L11)
-  - [归并排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L31)
+- [排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go)
+  - 插入排序
+  - 归并排序
     - 求小和
     - 找逆序对
-  - [快排](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L206)
-    - [荷兰国旗问题](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L230)
-    - [快排解法1](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L262)
-    - [快排解法2](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L297)
-  - [冒泡排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L339)
-  - [选择排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L377)
-  - [堆排序]
-    - [堆排序](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L452)
-    - [堆排序扩展：几乎已排序数组的排序问题](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L462)
-    - [堆排序扩展：topK算法☆](https://github.com/SecurityNeo/hello-algorithm/blob/master/sort.go#L516)
+  - 快排
+    - 荷兰国旗问题
+    - 快排两种解法
+  - 冒泡排序
+  - 选择排序
+  - 堆排序
+    - 堆排序扩展：几乎已排序数组的排序问题
+    - 堆排序扩展：topK算法☆

@@ -6,20 +6,23 @@ import (
 	"time"
 )
 
-// InsertSort 插入排序（每次将一个待排序的元素与已排序的元素进行逐一比较，直到找到合适的位置按大小插入）,
+// InsertSort 插入排序（每次将一个待排序的元素与已排序的元素进行逐一比较，直到找到合适的位置按大小插入）,类似整理扑克牌
 // 时间复杂度：O(n^2),适用于小规模数据和部分有序数据的排序需求。对于小规模数据和部分有序的数据，插入排序表现良好。
 func InsertSort(arr []int) {
 	if len(arr) > 1 {
-		for i := 1; i < len(arr); i++ {
-			for j := i - 1; j >= 0 && arr[j] > arr[j+1]; j-- {
+		// i为已排序区间的右边界，j初始位置为i，j+1初始为待排序区间左边界
+		// i<len(arr)-1: 当i来到数组倒数第二个位置之后，会进入for循环，这一次for循环之后，整个数组就有序了
+		for i := 0; i < len(arr)-1; i++ {
+			// 无序区间的第一个元素会不断与有序区间的元素比较，直至找到合适位置插入
+			for j := i; j >= 0 && arr[j] > arr[j+1]; j-- {
 				swap(arr, j, j+1)
 			}
 		}
 	}
-	fmt.Println(arr)
+	fmt.Println("insert result: ", arr)
 }
 
-// swap 数据交换
+// swap 数据交换，位运算
 func swap(arr []int, i, j int) {
 	arr[i] = arr[i] ^ arr[j]
 	arr[j] = arr[i] ^ arr[j]
@@ -30,14 +33,14 @@ func swap(arr []int, i, j int) {
 // 归并排序是将已有序的子序列合并为一个有序的完整序列。每次从两个数组中选择值较小的元素放到另一个辅助数组中。
 func mergeSort(arr []int) {
 	if len(arr) <= 1 {
-		fmt.Println("Sorted, array: ", arr)
+		fmt.Println("mergeSort result: ", arr)
 		return
 	}
 
 	// 此处调用一个递归函数
 	mergeSortProcess(arr, 0, len(arr)-1)
 
-	fmt.Println("Sorted, array: ", arr)
+	fmt.Println("mergeSort result: ", arr)
 }
 
 // mergeSortProcess 递归函数，实现将arr数组的L至R位置进行排序
@@ -100,7 +103,6 @@ func smallSum(arr []int) {
 		return
 	}
 	sum := smallSumProcess(arr, 0, len(arr)-1)
-	fmt.Println("Array: ", arr)
 	fmt.Printf("Small Sum: %d\n", sum)
 }
 
