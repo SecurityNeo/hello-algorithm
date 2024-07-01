@@ -553,5 +553,60 @@ func topK(arr []int, k int) {
 			}
 		}
 	}
-	fmt.Println("topK result:    ", topHeap)
+	fmt.Println("topK result:       ", topHeap)
+}
+
+// radixSort 基数排序，桶排序的扩展，是非比较类线性时间排序的一种。
+// 平均时间复杂度：O(dn) (d即表示整形的最高位数)
+// 空间复杂度：O(10n) （10表示0~9，用于存储临时的序列）
+func radixSort(arr []int) {
+	length := len(arr)
+	if length <= 1 {
+		fmt.Printf("No need to sort,array lenth: %d\n", length)
+		return
+	}
+
+	// 获取数组中最大的元素
+	maxV := arr[0]
+	for _, v := range arr {
+		if v > maxV {
+			maxV = v
+		}
+	}
+
+	// 以数组中最大的元素为基准，它有多少位，就需要进行多少次桶排序逻辑
+	sortCount := 1
+	for maxV/sortCount > 0 {
+		// countArr 桶数组
+		countArr := make([]int, 10)
+		helpArr := make([]int, length)
+
+		// 此循环运行之后，countArr就记录了本轮次中（即按个位/十位/百位...）元素的分布情况
+		// 例如sortCount=1， countArr[5]=2就表示，待排序数组中有2个元素个位为5
+		for i := 0; i < length; i++ {
+			// 获取待排序数组中元素某一位的数值
+			countArrIndex := (arr[i] / sortCount) % 10
+			countArr[countArrIndex]++
+		}
+
+		// sortCount=1， countArr[5]=5 ： 待排序数组个位小于等于5的个数为5
+		for i := 1; i < 10; i++ {
+			countArr[i] += countArr[i-1]
+		}
+
+		for i := length - 1; i >= 0; i-- {
+			// 获取数组元素对应位的值
+			index := (arr[i] / sortCount) % 10
+			// 这里的逻辑比较重要
+			helpArr[countArr[index]-1] = arr[i]
+			countArr[index]--
+		}
+		for i := 0; i < length; i++ {
+			arr[i] = helpArr[i]
+		}
+
+		sortCount *= 10
+	}
+
+	fmt.Println("radixSort result:  ", arr)
 }
