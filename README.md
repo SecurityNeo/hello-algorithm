@@ -31,3 +31,7 @@
 - 链表
   - [单链表](https://github.com/SecurityNeo/hello-algorithm/blob/master/link.go)
     - 单链表反转（原地反转、头插法）
+    - 回文链表
+    - 链表荷兰国旗问题
+    - 判断链表是否有环，并找到入环点
+    - 判断两个链表是否相交，并找到相交点
