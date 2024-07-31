@@ -240,18 +240,18 @@ func linkPartition(link *linkNode, pivot int) {
 	nLink.Print()
 }
 
-// isCircleLink 判断链表是否有环
-func isCircleLink(link *linkNode) {
+// isCircleLink 判断单链表是否有环，返回入环节点
+func isCircleLink(link *linkNode) *linkNode {
 	if link == nil || link.next == nil {
 		fmt.Println("not enough node")
-		return
+		return nil
 	}
 	fast := link.next.next
 	slow := link.next
 	for slow != fast {
 		if fast.next == nil || fast.next.next == nil {
 			fmt.Println("link has no circle")
-			return
+			return nil
 		}
 		slow = slow.next
 		fast = fast.next.next
@@ -263,31 +263,60 @@ func isCircleLink(link *linkNode) {
 		slow = slow.next
 	}
 	fmt.Println(fast.val)
+	return fast
 }
 
 // isIntersect 判断两个单链表是否相交
-func isIntersect(linkA *linkNode, linkB *linkNode) {
-	if linkA == nil || linkB == nil {
-		fmt.Println("not enough node")
+func isIntersect(linkA, linkB *linkNode) {
+	// 1 两个无环单链表相交
+	// 2 两个有环单链表相交
+	// 2.1 两个链表在入环之前相交
+	// 2.2 两个链表在环上相交
+	loopA := isCircleLink(linkA)
+	loopB := isCircleLink(linkB)
+	// 1 两个无环单链表相交问题
+	if loopA == nil && loopB == nil {
+		if intersect := noLoopLinkIsIntersect(linkA, linkB); intersect != nil {
+			fmt.Print("intersect at: ")
+			fmt.Println(intersect.val)
+			return
+		}
+		fmt.Println("disjoint")
 		return
+		// 2 两个有环单链表相交问题
+	} else if loopA != nil && loopB != nil {
+		if intersect := bothLoopLinkIsIntersect(linkA, loopA, linkB, loopB); intersect != nil {
+			fmt.Print("intersect at: ")
+			fmt.Println(intersect.val)
+			return
+		}
+		fmt.Println("disjoint")
+		return
+	}
+	fmt.Println("disjoint")
+}
+
+// noLoopLinkIsIntersect 判断两个无环单链表是否相交，返回相交节点
+func noLoopLinkIsIntersect(linkA, linkB *linkNode) *linkNode {
+	if linkA == nil || linkB == nil {
+		return nil
 	}
 	var linkALen int
 	var linkBLen int
 	curA := linkA
 	curB := linkB
-	for curA != nil {
+	for curA.next != nil {
 		curA = curA.next
 		linkALen++
 	}
 
-	for curB != nil {
+	for curB.next != nil {
 		curB = curB.next
 		linkBLen++
 	}
 
 	if curA != curB {
-		fmt.Println("disjoint")
-		return
+		return nil
 	}
 
 	if linkALen > linkBLen {
@@ -301,9 +330,7 @@ func isIntersect(linkA *linkNode, linkB *linkNode) {
 			pA = pA.next
 			pB = pB.next
 		}
-		fmt.Print("intersect at: ")
-		fmt.Println(pA.val)
-		return
+		return pA
 	} else if linkALen < linkBLen {
 		gap := linkBLen - linkALen
 		pA := linkA
@@ -315,9 +342,7 @@ func isIntersect(linkA *linkNode, linkB *linkNode) {
 			pA = pA.next
 			pB = pB.next
 		}
-		fmt.Print("intersect at: ")
-		fmt.Println(pA.val)
-		return
+		return pA
 	} else {
 		pA := linkA
 		pB := linkB
@@ -325,9 +350,36 @@ func isIntersect(linkA *linkNode, linkB *linkNode) {
 			pA = pA.next
 			pB = pB.next
 		}
-		fmt.Print("intersect at: ")
-		fmt.Println(pA.val)
+		return pA
 	}
+}
+
+// bothLoopLinkIsIntersect 判断两个有环单链表linkA与linkB是否相交（loopA和loopB分别为两个链表的入环节点），返回相交节点
+func bothLoopLinkIsIntersect(linkA, loopA, linkB, loopB *linkNode) *linkNode {
+	// 1 两个链表不相交
+	// 2 两个链表在入环之前相交
+	// 3 两个链表在环上相交
+
+	// 两个链表在入环之前相交的场景
+	// 这种场景下可以简化为无环单链表的相交问题，将入环节点当做链表结尾
+	if loopA == loopB {
+		tempNode := loopA.next
+		loopA.next = nil
+		intersect := noLoopLinkIsIntersect(linkA, linkB)
+		loopA.next = tempNode
+		return intersect
+	}
+
+	// 两个链表不相交
+	// 两个链表在环上相交
+	cur := loopA.next
+	for cur != loopA {
+		if cur == loopB {
+			return loopA
+		}
+		cur = cur.next
+	}
+	return nil
 }
 
 // link 单链表相关函数入口
@@ -368,7 +420,7 @@ func link() {
 	fmt.Print("linkPartition result:")
 	linkPartition(link2, 50)
 
-	// 4.判断链表是否有环
+	// 4.判断单链表是否有环
 	head2 := NewLinkNode()
 	linkHead2 := head2.getHead()
 	linkHead2.Insert(1)
@@ -380,7 +432,7 @@ func link() {
 	end.next = linkHead2.next.next.next
 	isCircleLink(linkHead2.next)
 
-	// 5.判断链表是否相交
+	// 5.判断两个无环单链表是否相交
 	head3 := NewLinkNode()
 	linkHead3 := head3.getHead()
 	linkHead3.Insert(1)
@@ -401,4 +453,7 @@ func link() {
 
 	isIntersect(linkA, linkB)
 
+	link3 := genLinkNode(6)
+	link4 := genLinkNode(7)
+	isIntersect(link3, link4)
 }
