@@ -432,28 +432,30 @@ func link() {
 	end.next = linkHead2.next.next.next
 	isCircleLink(linkHead2.next)
 
-	// 5.判断两个无环单链表是否相交
-	head3 := NewLinkNode()
-	linkHead3 := head3.getHead()
-	linkHead3.Insert(1)
-	linkHead3.Insert(2)
-	linkHead3.Insert(3)
-	linkHead3.Insert(4)
-	linkHead3.Insert(5)
-	linkHead3.Insert(6)
-	linkA := linkHead3.next
-
-	head4 := NewLinkNode()
-	linkHead4 := head4.getHead()
-	linkHead4.Insert(10)
-	linkHead4.Insert(20)
-	linkHead4.Insert(30)
-	linkHead4.next.next.next.next = linkHead3.next.next.next.next
-	linkB := linkHead4.next
-
-	isIntersect(linkA, linkB)
-
+	// 5.判断两个单链表是否相交
+	// 5.1 两个无环单链表
 	link3 := genLinkNode(6)
 	link4 := genLinkNode(7)
 	isIntersect(link3, link4)
+
+	// 5.2 两个有环单链表，环上相交
+	head5 := NewLinkNode()
+	linkHead5 := head5.getHead()
+	linkHead5.Insert(10)
+	linkHead5.Insert(20)
+	linkHead5.Insert(30)
+	linkHead5.Insert(40)
+	linkHead5.Insert(50)
+	linkHead5.Insert(60)
+	link5 := linkHead5.next
+	link5.getEnd().next = link5.next.next
+
+	head6 := NewLinkNode()
+	linkHead6 := head6.getHead()
+	linkHead6.Insert(100)
+	linkHead6.Insert(200)
+	link6 := linkHead6.next
+	link6.getEnd().next = link5.next.next.next
+
+	isIntersect(link5, link6)
 }

@@ -64,4 +64,6 @@ func main() {
 	radixSort(arr19)
 
 	link()
+
+	binaryTree()
 }
