@@ -38,12 +38,38 @@ func (s *stack) pop() (node *binaryTreeNode, err error) {
 	return node, err
 }
 
+func (s *stack) list() {
+	if s.topIndex == -1 {
+		return
+	}
+	for i := 0; i < s.cap; i++ {
+		fmt.Printf("[%d]->", s.arr[i].val)
+	}
+}
+
+func (s *stack) posList() {
+	if s.topIndex == -1 {
+		return
+	}
+	for i := s.topIndex; i > -1; i-- {
+		fmt.Printf("[%d]->", s.arr[i].val)
+	}
+}
+
 func newStack(cap int) (s *stack, err error) {
 	if cap > 1024 {
 		return nil, errors.New("stack cap: 1024")
 	}
 	arr := make([]*binaryTreeNode, cap)
 	return &stack{cap: cap, topIndex: -1, arr: arr}, nil
+}
+
+func (node *binaryTreeNode) getNodeCount() (nodeCount int) {
+	if node == nil {
+		return 0
+	}
+	nodeCount = node.left.getNodeCount() + node.right.getNodeCount() + 1
+	return
 }
 
 // recursionAllPrint 二叉树递归序打印
@@ -58,7 +84,7 @@ func (node *binaryTreeNode) recursionAllPrint() {
 	fmt.Printf("[%d]->", node.val)
 }
 
-// recursionPrePrint 二叉树前序遍历（递归）（头左右）
+// recursionPrePrint 二叉树先序遍历（递归）（头左右）
 func (node *binaryTreeNode) recursionPrePrint() {
 	if node == nil {
 		return
@@ -88,7 +114,7 @@ func (node *binaryTreeNode) recursionPosPrint() {
 	fmt.Printf("[%d]->", node.val)
 }
 
-// unRecursionPrePrint 二叉树前序遍历（非递归）（深度优先）
+// unRecursionPrePrint 二叉树先序遍历（非递归）（深度优先）
 func (node *binaryTreeNode) unRecursionPrePrint() {
 	if node == nil {
 		return
@@ -100,7 +126,7 @@ func (node *binaryTreeNode) unRecursionPrePrint() {
 		return
 	}
 	// 栈中有数据就弹出，然后先右后左该节点的子节点压入栈中
-	for nodeStack.topIndex < nodeStack.cap-1 && nodeStack.topIndex > -1 {
+	for nodeStack.topIndex > -1 {
 		tmpNode, _ := nodeStack.pop()
 		if tmpNode != nil {
 			fmt.Printf("[%d]->", tmpNode.val)
@@ -119,7 +145,8 @@ func (node *binaryTreeNode) unRecursionMidPrint() {
 	if node == nil {
 		return
 	}
-	nodeStack, _ := newStack(7)
+	nodeCount := node.getNodeCount()
+	nodeStack, _ := newStack(nodeCount)
 	head := node
 	for nodeStack.topIndex > -1 || head != nil {
 		if head != nil {
@@ -131,6 +158,30 @@ func (node *binaryTreeNode) unRecursionMidPrint() {
 			head = tmpNode.right
 		}
 	}
+}
+
+// unRecursionPosPrint 二叉树后续遍历（非递归）
+// 先序遍历是头左右，更改入栈顺序后就是头右左，再反转打印就是左右头，即为后续遍历的正确顺序了
+func (node *binaryTreeNode) unRecursionPosPrint() {
+	if node == nil {
+		return
+	}
+	nodeCount := node.getNodeCount()
+	nodeStack, _ := newStack(nodeCount)
+	showSTack, _ := newStack(nodeCount)
+
+	nodeStack.push(node)
+	for nodeStack.topIndex > -1 {
+		tmpNode, _ := nodeStack.pop()
+		showSTack.push(tmpNode)
+		if tmpNode.left != nil {
+			nodeStack.push(tmpNode.left)
+		}
+		if tmpNode.right != nil {
+			nodeStack.push(tmpNode.right)
+		}
+	}
+	showSTack.posList()
 }
 
 func binaryTree() {
@@ -158,4 +209,7 @@ func binaryTree() {
 	fmt.Println()
 	fmt.Print("unRecursionMidPrint: ")
 	binaryTree.unRecursionMidPrint()
+	fmt.Println()
+	fmt.Print("unRecursionPosPrint: ")
+	binaryTree.unRecursionPosPrint()
 }
