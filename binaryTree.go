@@ -1,6 +1,7 @@
 package main
 
 import (
+	"container/list"
 	"errors"
 	"fmt"
 )
@@ -114,7 +115,7 @@ func (node *binaryTreeNode) recursionPosPrint() {
 	fmt.Printf("[%d]->", node.val)
 }
 
-// unRecursionPrePrint 二叉树先序遍历（非递归）（深度优先）
+// unRecursionPrePrint 二叉树先序遍历（非递归）
 func (node *binaryTreeNode) unRecursionPrePrint() {
 	if node == nil {
 		return
@@ -181,7 +182,31 @@ func (node *binaryTreeNode) unRecursionPosPrint() {
 			nodeStack.push(tmpNode.right)
 		}
 	}
-	showSTack.posList()
+	//showSTack.posList()
+	for showSTack.topIndex > -1 {
+		nodeVal, _ := showSTack.pop()
+		fmt.Printf("[%d]->", nodeVal.val)
+	}
+}
+
+// bfs 二叉树广度优先遍历（BFS）
+func (node *binaryTreeNode) bfs() {
+	if node == nil {
+		return
+	}
+	// 队列先进先出
+	queue := list.New()
+	queue.PushBack(node)
+	for queue.Len() > 0 {
+		tmpNode := queue.Remove(queue.Front()).(*binaryTreeNode)
+		fmt.Printf("[%d]->", tmpNode.val)
+		if tmpNode.left != nil {
+			queue.PushBack(tmpNode.left)
+		}
+		if tmpNode.right != nil {
+			queue.PushBack(tmpNode.right)
+		}
+	}
 }
 
 func binaryTree() {
@@ -212,4 +237,7 @@ func binaryTree() {
 	fmt.Println()
 	fmt.Print("unRecursionPosPrint: ")
 	binaryTree.unRecursionPosPrint()
+	fmt.Println()
+	fmt.Print("bfs: ")
+	binaryTree.bfs()
 }
