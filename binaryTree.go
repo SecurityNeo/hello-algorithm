@@ -4,6 +4,7 @@ import (
 	"container/list"
 	"errors"
 	"fmt"
+	"math"
 )
 
 type binaryTreeNode struct {
@@ -139,6 +140,7 @@ func (node *binaryTreeNode) unRecursionPrePrint() {
 			nodeStack.push(tmpNode.left)
 		}
 	}
+	fmt.Println()
 }
 
 // unRecursionMidPrint 二叉树中序遍历（非递归）
@@ -159,6 +161,7 @@ func (node *binaryTreeNode) unRecursionMidPrint() {
 			head = tmpNode.right
 		}
 	}
+	fmt.Println()
 }
 
 // unRecursionPosPrint 二叉树后续遍历（非递归）
@@ -187,10 +190,11 @@ func (node *binaryTreeNode) unRecursionPosPrint() {
 		nodeVal, _ := showSTack.pop()
 		fmt.Printf("[%d]->", nodeVal.val)
 	}
+	fmt.Println()
 }
 
-// bfs 二叉树广度优先遍历（BFS）
-func (node *binaryTreeNode) bfs() {
+// BFS 二叉树广度优先遍历（BFS）
+func (node *binaryTreeNode) BFS() {
 	if node == nil {
 		return
 	}
@@ -207,6 +211,34 @@ func (node *binaryTreeNode) bfs() {
 			queue.PushBack(tmpNode.right)
 		}
 	}
+	fmt.Println()
+}
+
+// isBST 判断一个二叉树是否为二叉搜索树。二叉搜索树中序是升序排列的。
+func (node *binaryTreeNode) isBST() {
+	if node == nil {
+		return
+	}
+	max := math.MinInt
+	head := node
+	nodeCount := node.getNodeCount()
+	nodeStack, _ := newStack(nodeCount)
+	for nodeStack.topIndex > -1 || head != nil {
+		if head != nil {
+			nodeStack.push(head)
+			head = head.left
+		} else {
+			tmpNode, _ := nodeStack.pop()
+			if tmpNode.val > max {
+				max = tmpNode.val
+			} else {
+				fmt.Println("BST: false")
+				return
+			}
+			head = tmpNode.right
+		}
+	}
+	fmt.Println("BST: true")
 }
 
 func binaryTree() {
@@ -231,13 +263,27 @@ func binaryTree() {
 	fmt.Println()
 	fmt.Print("unRecursionPrePrint: ")
 	binaryTree.unRecursionPrePrint()
-	fmt.Println()
+
 	fmt.Print("unRecursionMidPrint: ")
 	binaryTree.unRecursionMidPrint()
-	fmt.Println()
+
 	fmt.Print("unRecursionPosPrint: ")
 	binaryTree.unRecursionPosPrint()
-	fmt.Println()
+
 	fmt.Print("bfs: ")
-	binaryTree.bfs()
+	binaryTree.BFS()
+	
+	binaryTree.isBST()
+
+	bt7 := &binaryTreeNode{4, nil, nil}
+	bt8 := &binaryTreeNode{7, nil, nil}
+	bt9 := &binaryTreeNode{13, nil, nil}
+	bt4 := &binaryTreeNode{1, nil, nil}
+	bt6 := &binaryTreeNode{14, bt9, nil}
+	bt5 := &binaryTreeNode{6, bt7, bt8}
+	bt3 := &binaryTreeNode{10, nil, bt6}
+	bt2 := &binaryTreeNode{3, bt4, bt5}
+	bt := &binaryTreeNode{8, bt2, bt3}
+
+	bt.isBST()
 }
