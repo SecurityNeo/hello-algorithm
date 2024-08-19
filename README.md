@@ -37,3 +37,4 @@
     - 判断两个单链表（有环或无环）是否相交，并找到相交点
 - [二叉树](https://github.com/SecurityNeo/hello-algorithm/blob/master/binaryTree.go)
   - 二叉树遍历（递归序、先序遍历（递归+非递归）、中序遍历（递归+非递归）、后续遍历（递归+非递归））、广度优先遍历
+  - 搜索二叉树、完全二叉树

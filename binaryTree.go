@@ -214,10 +214,12 @@ func (node *binaryTreeNode) BFS() {
 	fmt.Println()
 }
 
-// isBST 判断一个二叉树是否为二叉搜索树。二叉搜索树中序是升序排列的。
+// isBST 判断一个二叉树是否为搜索二叉树。搜索二叉树中序是升序排列的。
+// 1、左子树比根节点小，右子树比根节点大
+// 2、中序遍历时，其节点的值一定是升序排列的
 func (node *binaryTreeNode) isBST() {
 	if node == nil {
-		return
+		fmt.Println("BST: true")
 	}
 	max := math.MinInt
 	head := node
@@ -239,6 +241,39 @@ func (node *binaryTreeNode) isBST() {
 		}
 	}
 	fmt.Println("BST: true")
+}
+
+// isCBT 判断一个二叉树是否完全二叉树
+// 1、存在一个节点只有右子树，此树不是完全二叉树
+// 2、宽度优先遍历时，存在一个节点左右子树不双全后，后续节点必须是叶子节点，否则此树不是完全二叉树
+func (node *binaryTreeNode) isCBT() {
+	// 遍历过程中，遇到第一个节点左右两个孩子不双全时置为true
+	flag := false
+	if node == nil {
+		fmt.Println("CBT: true")
+		return
+	}
+
+	queue := list.New()
+	queue.PushBack(node)
+	for queue.Len() > 0 {
+		tmpNode := queue.Remove(queue.Front()).(*binaryTreeNode)
+		if (flag && (tmpNode.left != nil || tmpNode.right != nil)) || (tmpNode.left == nil && tmpNode.right != nil) {
+			fmt.Println("CBT: false")
+			return
+		}
+
+		if tmpNode.left != nil {
+			queue.PushBack(tmpNode.left)
+		}
+		if tmpNode.right != nil {
+			queue.PushBack(tmpNode.right)
+		}
+		if tmpNode.left == nil || tmpNode.right == nil {
+			flag = true
+		}
+	}
+	fmt.Println("CBT: true")
 }
 
 func binaryTree() {
@@ -272,7 +307,7 @@ func binaryTree() {
 
 	fmt.Print("bfs: ")
 	binaryTree.BFS()
-	
+
 	binaryTree.isBST()
 
 	bt7 := &binaryTreeNode{4, nil, nil}
@@ -286,4 +321,7 @@ func binaryTree() {
 	bt := &binaryTreeNode{8, bt2, bt3}
 
 	bt.isBST()
+
+	bt.isCBT()
+	binaryTree.isCBT()
 }
