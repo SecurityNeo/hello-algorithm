@@ -66,12 +66,26 @@ func newStack(cap int) (s *stack, err error) {
 	return &stack{cap: cap, topIndex: -1, arr: arr}, nil
 }
 
+// getNodeCount 二叉树的节点个数
 func (node *binaryTreeNode) getNodeCount() (nodeCount int) {
 	if node == nil {
 		return 0
 	}
 	nodeCount = node.left.getNodeCount() + node.right.getNodeCount() + 1
 	return
+}
+
+// getMaxDepth 二叉树最大深度
+func (node *binaryTreeNode) getMaxDepth() (maxDepth int) {
+	if node == nil {
+		return 0
+	}
+	leftMaxDepth := node.left.getMaxDepth()
+	rightMaxDepth := node.right.getMaxDepth()
+	if leftMaxDepth >= rightMaxDepth {
+		return leftMaxDepth + 1
+	}
+	return rightMaxDepth + 1
 }
 
 // recursionAllPrint 二叉树递归序打印
@@ -243,6 +257,37 @@ func (node *binaryTreeNode) isBST() {
 	fmt.Println("BST: true")
 }
 
+// isBBT 判断一个二叉树是否为平衡二叉树
+// 对于任何一个子树，满足三个条件：
+// 1、左子树与右子树都为平衡二叉树；
+// 2、它是一颗空树或者它的左子树与右子树的高度差绝对值不超过1
+func (node *binaryTreeNode) isBBT() {
+	if isB, _ := isBbtProcess(node); isB {
+		fmt.Println("BBT: true")
+		return
+	}
+	fmt.Println("BBT: false")
+}
+
+func isBbtProcess(node *binaryTreeNode) (isB bool, height int) {
+	if node == nil {
+		return true, 0
+	}
+	leftIsB, leftHeight := isBbtProcess(node.left)
+	rightIsB, rightHeight := isBbtProcess(node.right)
+	if leftHeight >= rightHeight {
+		height = leftHeight + 1
+	} else {
+		height = rightHeight + 1
+	}
+
+	if math.Abs(float64(leftHeight-rightHeight)) <= 1 && leftIsB && rightIsB {
+		return true, height
+	} else {
+		return false, height
+	}
+}
+
 // isCBT 判断一个二叉树是否完全二叉树
 // 1、存在一个节点只有右子树，此树不是完全二叉树
 // 2、宽度优先遍历时，存在一个节点左右子树不双全后，后续节点必须是叶子节点，否则此树不是完全二叉树
@@ -274,6 +319,21 @@ func (node *binaryTreeNode) isCBT() {
 		}
 	}
 	fmt.Println("CBT: true")
+}
+
+// isFBT 判断一个二叉树是否为满二叉树
+// 二叉树最大深度为k，如果其节点数为(2^k)-1，那此树即为满二叉树
+func (node *binaryTreeNode) isFBT() {
+	if node == nil {
+		fmt.Println("FBT: true")
+	}
+	nodeCount := node.getNodeCount()
+	maxDepth := node.getMaxDepth()
+	if nodeCount == (1<<maxDepth)-1 {
+		fmt.Println("FBT: true")
+	} else {
+		fmt.Println("FBT: false")
+	}
 }
 
 func binaryTree() {
@@ -323,5 +383,13 @@ func binaryTree() {
 	bt.isBST()
 
 	bt.isCBT()
-	binaryTree.isCBT()
+	bt.unRecursionMidPrint()
+
+	maxDepth := bt.getMaxDepth()
+	fmt.Printf("MaxDepth: %d\n", maxDepth)
+
+	bt.isFBT()
+
+	binaryTree.isBBT()
+	bt.isBBT()
 }
