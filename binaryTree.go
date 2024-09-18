@@ -233,7 +233,7 @@ func (node *binaryTreeNode) BFS() {
 // 2、中序遍历时，其节点的值一定是升序排列的
 func (node *binaryTreeNode) isBST() {
 	if node == nil {
-		fmt.Println("BST: true")
+		fmt.Println("BST(unRecursion): true")
 	}
 	max := math.MinInt
 	head := node
@@ -248,13 +248,70 @@ func (node *binaryTreeNode) isBST() {
 			if tmpNode.val > max {
 				max = tmpNode.val
 			} else {
-				fmt.Println("BST: false")
+				fmt.Println("BST(unRecursion): false")
 				return
 			}
 			head = tmpNode.right
 		}
 	}
-	fmt.Println("BST: true")
+	fmt.Println("BST(unRecursion): true")
+}
+
+// isBSTRecursion 判断一个二叉树是否为搜索二叉树的递归实现
+func (node *binaryTreeNode) isBSTRecursion() {
+	if node == nil {
+		fmt.Println("BST(recursion): true")
+		return
+	}
+	if isBst, _, _ := isBSTRecursionProcess(node); isBst {
+		fmt.Println("BST(recursion): true")
+		return
+	}
+	fmt.Println("BST(recursion): false")
+}
+
+func isBSTRecursionProcess(node *binaryTreeNode) (isBst bool, min int, max int) {
+	if node.left == nil && node.right == nil {
+		return true, node.val, node.val
+	}
+
+	min = node.val
+	max = node.val
+
+	var leftIsBst bool
+	var leftMin int
+	var leftMax int
+	var rightIsBst bool
+	var rightMin int
+	var rightMax int
+
+	if node.left != nil {
+		leftIsBst, leftMin, leftMax = isBSTRecursionProcess(node.left)
+		min = int(math.Min(float64(min), float64(leftMin)))
+		max = int(math.Max(float64(max), float64(leftMax)))
+	} else {
+		// 使左子树的判断条件成立
+		leftIsBst = true
+		// leftMax 只做判断使用，值不会返回
+		leftMax = node.val - 1
+	}
+
+	if node.right != nil {
+		rightIsBst, rightMin, rightMax = isBSTRecursionProcess(node.right)
+		min = int(math.Min(float64(min), float64(rightMin)))
+		max = int(math.Max(float64(max), float64(rightMax)))
+	} else {
+		// 使右子树的判断条件成立
+		rightIsBst = true
+		// leftMax 只做判断使用，值不会返回
+		rightMin = node.val + 1
+	}
+	// 左子树的最大值比当前节点值小，右子树的最小值比当前节点值大，并且左右子树都是搜索二叉树
+	if leftMax < node.val && node.val < rightMin && leftIsBst && rightIsBst {
+		return true, min, max
+	} else {
+		return false, min, max
+	}
 }
 
 // isBBT 判断一个二叉树是否为平衡二叉树
@@ -336,6 +393,71 @@ func (node *binaryTreeNode) isFBT() {
 	}
 }
 
+// maxDiameter 二叉树最大直径（二叉树的直径指二叉树中任意两个节点之间最长路径的长度，即两个节点之间最大节点数减1）
+func (node *binaryTreeNode) maxDiameter() {
+	// maxDiameter 最大直径，全局变量
+	var maxDiameter int
+	// dfs 返回二叉树的最大深度-1
+	var dfs func(node *binaryTreeNode) int
+	dfs = func(node *binaryTreeNode) int {
+		if node == nil {
+			return -1
+		}
+		leftDepth := dfs(node.left) + 1
+		rightDepth := dfs(node.right) + 1
+		// 左右子树的最大深度之和大于maxDiameter就更新其值
+		maxDiameter = max(maxDiameter, leftDepth+rightDepth)
+		return max(leftDepth, rightDepth)
+	}
+	dfs(node)
+	fmt.Printf("maxDiameter: %d\n", maxDiameter)
+}
+
+// maxPathSum 二叉树最大路径和（NO.124）
+func (node *binaryTreeNode) maxPathSum() {
+	maxPathSum := math.MinInt
+	var dfs func(node *binaryTreeNode) int
+	dfs = func(node *binaryTreeNode) int {
+		if node == nil {
+			return 0
+		}
+		leftSum := dfs(node.left)
+		rightSum := dfs(node.right)
+		maxPathSum = max(maxPathSum, leftSum+rightSum+node.val)
+		// 返回当前子树的最大路径和，如果为负数，返回0，表示当前子树不加人路径
+		return max(0, max(leftSum, rightSum)+node.val)
+	}
+	dfs(node)
+	fmt.Printf("maxPathSum: %d\n", maxPathSum)
+}
+
+// rob 打家劫舍问题（No.337）
+func (node *binaryTreeNode) rob() {
+	var dfs func(node *binaryTreeNode) (int, int)
+	// 返回的两个值：1、偷当前这一家能获得的最高金额；2、不偷当前这一家能获得的最高金额
+	dfs = func(node *binaryTreeNode) (int, int) {
+		if node == nil {
+			return 0, 0
+		}
+		leftRob, leftNoRob := dfs(node.left)
+		rightRob, rightNoRob := dfs(node.right)
+		// 由于不能偷紧挨着的两家，如果偷当前这一家，左孩子与右孩子这两家就不能偷
+		rob := leftNoRob + rightNoRob + node.val
+		// 如果不偷当前这一家，那左孩子与右孩子这两家可偷可不偷，按着能获得最高金额的方案来
+		noRob := max(leftRob, leftNoRob) + max(rightRob, rightNoRob)
+		return rob, noRob
+	}
+	maxRobCount := max(dfs(node))
+	fmt.Printf("maxRobCount: %d\n", maxRobCount)
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func binaryTree() {
 	binaryTree7 := &binaryTreeNode{7, nil, nil}
 	binaryTree6 := &binaryTreeNode{6, nil, nil}
@@ -368,8 +490,6 @@ func binaryTree() {
 	fmt.Print("bfs: ")
 	binaryTree.BFS()
 
-	binaryTree.isBST()
-
 	bt7 := &binaryTreeNode{4, nil, nil}
 	bt8 := &binaryTreeNode{7, nil, nil}
 	bt9 := &binaryTreeNode{13, nil, nil}
@@ -381,6 +501,9 @@ func binaryTree() {
 	bt := &binaryTreeNode{8, bt2, bt3}
 
 	bt.isBST()
+	bt.isBSTRecursion()
+	binaryTree.isBST()
+	binaryTree.isBSTRecursion()
 
 	bt.isCBT()
 	bt.unRecursionMidPrint()
@@ -392,4 +515,13 @@ func binaryTree() {
 
 	binaryTree.isBBT()
 	bt.isBBT()
+
+	binaryTree.maxDiameter()
+	bt.maxDiameter()
+
+	binaryTree.maxPathSum()
+	bt.maxPathSum()
+
+	binaryTree.rob()
+	bt.rob()
 }
