@@ -413,7 +413,7 @@ func (node *binaryTreeNode) maxDiameter() {
 	fmt.Printf("maxDiameter: %d\n", maxDiameter)
 }
 
-// maxPathSum 二叉树最大路径和（NO.124）
+// maxPathSum 二叉树最大路径和（No.124）
 func (node *binaryTreeNode) maxPathSum() {
 	maxPathSum := math.MinInt
 	var dfs func(node *binaryTreeNode) int
@@ -449,6 +449,62 @@ func (node *binaryTreeNode) rob() {
 	}
 	maxRobCount := max(dfs(node))
 	fmt.Printf("maxRobCount: %d\n", maxRobCount)
+}
+
+// maxUniValPath 二叉树最大同值路径（No.687）
+// 最大同值路径必定为某一个节点的左最大同值路径与右最大同值路径之和
+func (node *binaryTreeNode) maxUniValPath() {
+	var maxUniValPath int
+	var dfs func(node *binaryTreeNode) int
+	dfs = func(node *binaryTreeNode) int {
+		if node == nil {
+			return 0
+		}
+		// leftVal与rightVal分别表示以当前节点为根节点左右子树的最大同值路径长
+		leftVal := dfs(node.left)
+		rightVal := dfs(node.right)
+		// 存在左或者右孩子，并且孩子的值与当前节点的值不相同，那就无法构成同值路径，就将对应值置为0
+		// 为何父结点和子结点值不同，就将对应部分的长度置为0，是因为值不同，已经无法在当前这个局部范围内构成相同值路径了，
+		// 同时也不可能和更上一层的结点构成相同值路径了（因为不连续）
+		if node.left != nil && node.left.val == node.val {
+			leftVal = leftVal + 1
+		} else {
+			leftVal = 0
+		}
+		if node.right != nil && node.right.val == node.val {
+			rightVal = rightVal + 1
+		} else {
+			rightVal = 0
+		}
+		// 最大同值路径必定为某一个节点的左最大同值路径与右最大同值路径之和
+		maxUniValPath = max(maxUniValPath, leftVal+rightVal)
+		// 对于当前节点来说，其返回的是左或者右的最大同值路径较大的一个，而不是两者之和，因为其父节点有可能也能与其构成同值路径
+		return max(leftVal, rightVal)
+	}
+	dfs(node)
+	fmt.Printf("maxUniValPath: %d\n", maxUniValPath)
+}
+
+// lowestPubAncestor 最低公共祖先
+func (node *binaryTreeNode) lowestPubAncestor(c1, c2 *binaryTreeNode) {
+	var process func(node, c1, c2 *binaryTreeNode) *binaryTreeNode
+	process = func(node, c1, c2 *binaryTreeNode) *binaryTreeNode {
+		if node == nil || node == c1 || node == c2 {
+			return node
+		}
+		left := process(node.left, c1, c2)
+		right := process(node.right, c1, c2)
+		if left != nil && right != nil {
+			return node
+		}
+		if left != nil {
+			return left
+		} else {
+			return right
+		}
+	}
+	lowestPubAncestor := process(node, c1, c2)
+	fmt.Printf("lowestPubAncestor: %d\n", lowestPubAncestor.val)
 }
 
 func max(a, b int) int {
@@ -500,6 +556,13 @@ func binaryTree() {
 	bt2 := &binaryTreeNode{3, bt4, bt5}
 	bt := &binaryTreeNode{8, bt2, bt3}
 
+	bta := &binaryTreeNode{1, nil, nil}
+	btb := &binaryTreeNode{1, nil, nil}
+	btc := &binaryTreeNode{5, nil, nil}
+	btd := &binaryTreeNode{5, nil, btc}
+	bte := &binaryTreeNode{4, bta, btb}
+	btf := &binaryTreeNode{5, bte, btd}
+
 	bt.isBST()
 	bt.isBSTRecursion()
 	binaryTree.isBST()
@@ -524,4 +587,8 @@ func binaryTree() {
 
 	binaryTree.rob()
 	bt.rob()
+
+	btf.maxUniValPath()
+
+	bt.lowestPubAncestor(bt2, bt7)
 }
