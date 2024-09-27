@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strconv"
 )
 
 type binaryTreeNode struct {
@@ -128,6 +129,26 @@ func (node *binaryTreeNode) recursionPosPrint() {
 	node.left.recursionPosPrint()
 	node.right.recursionPosPrint()
 	fmt.Printf("[%d]->", node.val)
+}
+
+func (node *binaryTreeNode) btPreMarshal() {
+	var res string
+	var process func(node *binaryTreeNode)
+	process = func(node *binaryTreeNode) {
+		if node == nil {
+			res = res + "#NULL"
+		} else {
+			res = res + "#" + strconv.Itoa(node.val)
+			process(node.left)
+			process(node.right)
+		}
+	}
+	process(node)
+	fmt.Println(res)
+}
+
+func btPreUnMarshal(content, split string) {
+
 }
 
 // unRecursionPrePrint 二叉树先序遍历（非递归）
@@ -485,15 +506,21 @@ func (node *binaryTreeNode) maxUniValPath() {
 	fmt.Printf("maxUniValPath: %d\n", maxUniValPath)
 }
 
-// lowestPubAncestor 最低公共祖先
-func (node *binaryTreeNode) lowestPubAncestor(c1, c2 *binaryTreeNode) {
+// LCA 最低公共祖先。以下为递归优化解法，思路比较抽象，也可以使用map来记录每个节点的父节点来做。
+// 只会存在以下两种情况：
+// 1、最低公共祖先是c1或c2；
+// 2、最低公共祖先不是是c1或c2，而是在c1、c2的上方。
+func (node *binaryTreeNode) LCA(c1, c2 *binaryTreeNode) {
 	var process func(node, c1, c2 *binaryTreeNode) *binaryTreeNode
 	process = func(node, c1, c2 *binaryTreeNode) *binaryTreeNode {
+		// 这个条件即能覆盖情况1
+		// 先向下找到c1、c2,然后在上面的节点来判断
 		if node == nil || node == c1 || node == c2 {
 			return node
 		}
 		left := process(node.left, c1, c2)
 		right := process(node.right, c1, c2)
+		// 如果左子树与右子树返回值均不为空，那一定是左右分别发现了c1、c2，这个时候node就是他们的最低公共祖先
 		if left != nil && right != nil {
 			return node
 		}
@@ -590,5 +617,7 @@ func binaryTree() {
 
 	btf.maxUniValPath()
 
-	bt.lowestPubAncestor(bt2, bt7)
+	bt.LCA(bt2, bt7)
+
+	binaryTree.btPreMarshal()
 }
