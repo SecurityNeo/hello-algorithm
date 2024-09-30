@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 type binaryTreeNode struct {
@@ -131,24 +132,109 @@ func (node *binaryTreeNode) recursionPosPrint() {
 	fmt.Printf("[%d]->", node.val)
 }
 
-func (node *binaryTreeNode) btPreMarshal() {
-	var res string
-	var process func(node *binaryTreeNode)
-	process = func(node *binaryTreeNode) {
+// btPreMarshal 二叉树序列化(先序)
+func (node *binaryTreeNode) btPreMarshal(split string) string {
+	var process func(node *binaryTreeNode) string
+	process = func(node *binaryTreeNode) string {
 		if node == nil {
-			res = res + "#NULL"
-		} else {
-			res = res + "#" + strconv.Itoa(node.val)
-			process(node.left)
-			process(node.right)
+			return "NULL" + split
 		}
+		res := strconv.Itoa(node.val) + split
+		res = res + process(node.left)
+		res = res + process(node.right)
+		return res
 	}
-	process(node)
+	res := process(node)
 	fmt.Println(res)
+	return res
 }
 
-func btPreUnMarshal(content, split string) {
+// btPosMarshal 二叉树序列化（后序）
+func (node *binaryTreeNode) btPosMarshal(split string) string {
+	var process func(node *binaryTreeNode) string
+	process = func(node *binaryTreeNode) string {
+		var res string
+		if node == nil {
+			return "NULL" + split
+		}
+		res = res + process(node.left)
+		res = res + process(node.right)
+		res = res + strconv.Itoa(node.val) + "_"
+		return res
+	}
+	res := process(node)
+	fmt.Println(res)
+	return res
+}
 
+// btPreUnMarshal 二叉树反序列化（先序）
+func btPreUnMarshal(content, splitStr string) *binaryTreeNode {
+
+	if len(content) == 0 {
+		fmt.Println("Null B tree")
+		return nil
+	}
+	contentArr := strings.Split(content, splitStr)
+	queue := list.New()
+	for i := 0; i < len(contentArr); i++ {
+		queue.PushBack(contentArr[i])
+	}
+
+	var process func() *binaryTreeNode
+	process = func() *binaryTreeNode {
+		var arrVal string
+		if queue.Len() > 0 {
+			arrVal = queue.Remove(queue.Front()).(string)
+		} else {
+			return nil
+		}
+		if arrVal == "NULL" {
+			return nil
+		}
+		val, _ := strconv.Atoi(arrVal)
+		node := &binaryTreeNode{val: val}
+		node.left = process()
+		node.right = process()
+		return node
+	}
+	node := process()
+	return node
+}
+
+// btPosUnMarshal 二叉树反序列化（后序）
+// 注意：后序遍历顺序为左右头，需要现将原始序列化的顺序颠倒（颠倒后为头右左），再以头右左的方式反序列化，因为先构造头才能构造孩子
+// 所以入队列的顺序是从最后开始，然后在递归的时候按头右左顺序进行
+func btPosUnMarshal(content, splitStr string) *binaryTreeNode {
+	if len(content) == 0 {
+		fmt.Println("Null B tree")
+		return nil
+	}
+	contentArr := strings.Split(content, splitStr)
+	queue := list.New()
+	// 字符串最后一个是splitStr，需要提前退出，所以是“-2”
+	for i := len(contentArr) - 2; i >= 0; i-- {
+		queue.PushBack(contentArr[i])
+	}
+
+	var process func() *binaryTreeNode
+	process = func() *binaryTreeNode {
+		var arrVal string
+		if queue.Len() > 0 {
+			arrVal = queue.Remove(queue.Front()).(string)
+		} else {
+			return nil
+		}
+		if arrVal == "NULL" {
+			return nil
+		}
+		val, _ := strconv.Atoi(arrVal)
+		node := &binaryTreeNode{val: val}
+		node.right = process()
+		node.left = process()
+		return node
+	}
+	node := process()
+	return node
 }
 
 // unRecursionPrePrint 二叉树先序遍历（非递归）
@@ -619,5 +705,12 @@ func binaryTree() {
 
 	bt.LCA(bt2, bt7)
 
-	binaryTree.btPreMarshal()
+	str := binaryTree.btPreMarshal("_")
+
+	btree := btPreUnMarshal(str, "_")
+	btree.btPreMarshal("_")
+
+	str2 := binaryTree.btPosMarshal("_")
+	btree2 := btPosUnMarshal(str2, "_")
+	btree2.btPosMarshal("_")
 }
